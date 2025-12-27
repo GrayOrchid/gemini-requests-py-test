@@ -7,17 +7,15 @@ from pydantic import BaseModel
 
 app = FastAPI(title="BJU Calculator API")
 
-# --- НАСТРОЙКА CORS ---
-# Это позволяет твоему фронтенду делать запросы к этому API
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # В продакшене лучше заменить на конкретный домен твоего фронтенда
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"], # Разрешить все методы (GET, POST и т.д.)
-    allow_headers=["*"], # Разрешить все заголовки
+    allow_methods=["*"],
+    allow_headers=["*"], 
 )
 
-# Берем ключ из переменных окружения Render
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel('gemini-3-flash-preview') 
@@ -42,7 +40,6 @@ async def calculate_bju(request: ProductRequest):
     """
     
     try:
-        # Проверяем наличие ключа
         if not API_KEY:
              return {"status": "error", "message": "API Key is missing on server"}
 
