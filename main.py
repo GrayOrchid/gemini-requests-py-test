@@ -49,7 +49,10 @@ async def calculate_bju(request: ProductRequest):
         prompt = f"{system_instruction}\n\nПользователь ввел: {request.ingredients}"
         response = model.generate_content(
             prompt,
-            generation_config={"response_mime_type": "application/json"}
+            generation_config={
+                "response_mime_type": "application/json",
+                "temperature": 0.0  
+            }
         )
         
         return json.loads(response.text)
