@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 # Берем ключ из переменных окружения Render
-API_KEY = os.getenv("AIzaSyDz1NcoDq_b6foa0yNNMvaEL1XFQNDLoik")
+API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel('gemini-3-flash-preview') 
 
