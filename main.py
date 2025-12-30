@@ -2,23 +2,24 @@ import os
 import json
 import google.generativeai as genai
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-
+from pydantic import BaseModel
 
 app = FastAPI(title="BJU Calculator API")
+
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"], 
 )
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('gemini-3-flash')
+model = genai.GenerativeModel('gemini-3-flash-preview') 
+
 
 class ProductRequest(BaseModel):
     ingredients: str
@@ -40,28 +41,18 @@ async def calculate_bju(request: ProductRequest):
     
     try:
         if not API_KEY:
-            raise HTTPException(status_code=500, detail="API Key missing")
+             return {"status": "error", "message": "API Key is missing on server"}
 
-        prompt = f"{system_instruction}\n\nПользователь: {request.ingredients}"
+        prompt = f"{system_instruction}\n\nПользователь ввел: {request.ingredients}"
         response = model.generate_content(
             prompt,
-            generation_config={"response_mime_type": "application/json", "temperature": 0.1}
+            generation_config={
+                "response_mime_type": "application/json",
+                "temperature": 0.0  
+            }
         )
         
-        data = json.loads(response.text)
-        
-        score = data.get("health_assessment", 0)
-        
-        if score < 4:
-            color = "red"
-        elif score < 7:
-            color = "yellow"
-        else:
-            color = "green"
-            
-        data["color"] = color
-        
-        return data
+        return json.loads(response.text)
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
