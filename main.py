@@ -18,7 +18,7 @@ app.add_middleware(
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-3-flash')
 
 class ProductRequest(BaseModel):
     ingredients: str
@@ -50,7 +50,6 @@ async def calculate_bju(request: ProductRequest):
         
         data = json.loads(response.text)
         
-        # Извлекаем оценку и считаем цвет
         score = data.get("health_assessment", 0)
         
         if score < 4:
@@ -60,7 +59,6 @@ async def calculate_bju(request: ProductRequest):
         else:
             color = "green"
             
-        # Добавляем цвет в корень ответа для удобства
         data["color"] = color
         
         return data
